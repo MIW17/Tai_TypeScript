@@ -50,11 +50,12 @@
   - [10.2 Function Declaration](#102-function-declaration)
   - [10.3 Function Expression](#103-function-expression)
   - [10.4 Arrow Function](#104-arrow-function)
-- [11. Class vs Interface vs Type Alias](#-11-class-vs-interface-vs-type-alias)
+  - [10.5 Anonymous Function](#105-anonymous-function)
+- [11. Class vs Interface vs Type Alias](#-11-classclass-vs-interface-vs-type-alias)
   - [11.1 type Alias](#111-type-alias)
   - [11.2 interface](#112-interface)
   - [11.3 class](#113-class)
-
+= [12. ]()
 ---
 
 ## 📘 0. Interesting links
@@ -73,6 +74,10 @@
 ---
 
 ## 📘 2. Getting started with TypeScript
+- Before that, remmember to install `ts-node` to run TypeScript directly
+```bash
+npm install ts-node typescript @types/node --save-dev
+```
 
 ### 2.1 TypeScript compiler (tsc)
 
@@ -656,7 +661,6 @@ For example:
 ---
 
 ## 🛠 10. Functions
-
 - Block of code that can take inputs (parameters), do work, return output.
 - Can be named, anonymous, arrow.
 - There are different ways of declaring functions:
@@ -798,7 +802,17 @@ alert(double(3)); // 6
     return a + b;
   };
 ```
+### 10.5 Anonymous Function
+- The Anonymous Function is the classical way to define a function without a name. 
+- It is typically used for callbacks and event handlers where the function's logic is only needed at that specific point in the code.
 
+- Syntax: using the `function` keyword without a name after it
+```ts
+function(param1, param2) {
+    // function body
+    return param1 + param2;
+}
+```
 ---
 
 ## 11. `Class` vs `Interface` vs `Type Alias`
@@ -807,6 +821,7 @@ TypeScript gives us different ways to define the **shape of data:**
 ✅ `type` alias
 ✅ `interface`
 ✅ `class`
+
 
 > Each serves a different purpose.
 ### 11.1 `type` Alias
@@ -894,7 +909,7 @@ We can also define `union` and `intersection` types with `|` and `&`
 
   const a: Animal = { name: "Dog", age: 3 }; // valid!
 ```
-### 11.3 `class`
+ ### 11.3 `class`
 > - A `class` is a blueprint for creating ***objects*** with specific structure and behavior. 
 > - Unlike others, a `class` can contain both:
     - data: *properties*
@@ -977,3 +992,171 @@ We can create a subclass that **inherits** from a base class using `extends`:
   const myDog = new Dog("Buddy", "Golden Retriever");
   myDog.makeSound(); // Buddy barks.
 ```
+## 12. Synchronous programming and Asynchronous programming
+### 12.1 Synchronous Programming
+- Executing tasks sequentially
+---
+## 13. Callback -> Promise -> Async/Await
+### Asynchronous Vs Synchronous Programming
+
+| Programming type | Description | Example |
+| ---------------- |------------ | ------- |
+| **Synchronous**  | Code runs **in order**, line by line      | Using `console.log` 10 times, each line will be executed line by line |
+| **Asynchronous** | Code runs **in parallel**, **does not wait** (IO, API, delay) | Call API, read file, `setTimeout`, `fetch`                     |
+
+
+- [Synchronous và Asynchronous trong JavaScript](https://viblo.asia/p/synchronous-va-asynchronous-trong-javascript-WAyK8LqnKxX)
+### Overview
+- JavaScript is asynchrnous by nature - it doesn't wait for a task to complete before moving on to the next one.
+- This is great for tasks such as:
+    - Loading data from a server --> E.g: Fetching user data from an API
+    - Waiting for a button click --> E.g: Handling user interactions in a web app
+    - Delaying actions --> E.g: Showing a loading spinner for a few seconds
+    - Animations, file reading, etc
+
+- But managing asynchronous code can be tricky. 
+- Over time, JavaScript has evolved several patterns to handle async operations:
+
+| Concept         | Motivation| Limitation |
+| --------------- | ----------| ---------- |
+| **`callback`**    | First solution: pass a function to be run later             | Hard to manage when deeply nested (Callback Hell)         |
+| **`promise`**     | Clearer way to handle async, support `.then()` / `.catch()` | Still a bit verbose; harder to write clean step-by-step flow |
+| **`async/await`** | Makes async code look synchronous and readable              | Must be inside an `async` function |
+
+### 13.1 Callback
+- A `callback` is a function passed as an argument to another function, to be executed later when an async operation completes.
+- 📌 ***Use case***: There are many ways of using callback function
+    - a) Using Named function (as usual: using the `function` keyword)
+    - b) Using Arrow function
+    - c) Using Anonymous function
+
+### 13.1.a Using Named function (as usual)
+- Using a named function as a callback is the most explicit and often the cleanest way to define a callback, especially for complex logic or when the function might be reused.
+- Syntax:
+> The core idea is: a named function is defined separately and its name is passed as a parameter.
+
+```ts
+  // 1. Define 2 Callback Functions: multiply() & add() function
+  function multiply(a, b) {
+      return a * b;
+  }
+
+  function add(a, b) {
+      return a + b;
+  }
+
+  // 2. Define outer function: the function that need callback function:
+  // Define applyOperation() function that need input: 2 numbers and one function
+  function applyOperation(x, y, operation) {
+      if (typeof operation === 'function') {
+        console.log(`Start applying operation between: ${x} and ${y}...`);
+      
+        // 4. Executing Callback function (Gọi hàm đã được truyền vào)
+        // here 'operation' can be either 'multiply' or 'add'
+        const result = operation(x, y); 
+        
+        return `Final result is: ${result}`;
+      }
+  }
+
+  // 3. Passing callback function into operation (Truyền Hàm làm Đối Số)
+
+  // A. Truyền hàm 'multiply'
+  const resultA = applyOperation(10, 5, multiply); 
+  console.log(resultA); 
+  // Output: Kết quả cuối cùng: 50 (vì 10 * 5)
+
+  // B. Truyền hàm 'add'
+  const resultB = applyOperation(10, 5, add); 
+  console.log(resultB); 
+  // Output: Kết quả cuối cùng: 15 (vì 10 + 5)
+```
+
+**Explanation**
+- `applyOperation()`: responsible for main task.
+- `operation` param: it's literally passing a function into a function as a param.
+
+
+### 13.1.b Using Arrow function
+- Same logic but with diffrent syntax for the callback function because we're going to use it as an `arrow function`.
+- We still has `applyOperation()`, yet we don't need to declare the callback function *separately*.
+
+- Syntax:
+```ts
+  // #1
+  function applyOperation(x, y, operation) {
+      console.log(`Start applying operation between ${x} và ${y}...`);
+      // Execute Callback function: here 'operation' is Arrow Function
+      
+      // #3
+      const result = operation(x, y); 
+      
+      return `Final result is: ${result}`;
+  }
+
+  // #2
+  // Arrow Function (callback) được truyền vào vị trí đối số thứ ba
+  const resultA = applyOperation(12, 4, (a, b) => {
+      return a * b; // Logic of callback function: return multiplication
+  });
+
+  console.log(resultA);
+```
+**Explanation**
+- `(a, b) => { return a * b; }`: passed into `operation` param.
+- `operation(x,y)`: will be executed inside that arrow function.
+
+### 13.1.c Using Anonymous function
+- Using Anonymous Function is the classical way to define a function without a name. I
+- USE CASE: It is typically used for 
+    - callbacks and event handlers where the function's logic is only needed at that specific point in the code.
+    - Definition: 
+
+- Syntax:
+```ts
+  // #1
+  function applyOperation(x, y, operation) {
+      console.log(`Start applying operation between ${x} và ${y}...`);
+      // Execute Callback function: here 'operation' is Arrow Function
+      
+      // #3
+      const result = operation(x, y); 
+      
+      return `Final result is: ${result}`;
+  }
+
+  // #2
+  // Anonymous Function: the callback logic (division) is defined
+  const resultA = applyOperation(20, 5, function(num1, num2) {
+    // This is the specific logic the outer function will execute.
+    return num1 / num2; 
+  });
+
+  console.log(resultA);
+  // Output: 
+  // Bắt đầu áp dụng phép toán giữa 20 and 5...
+  // Final result: 4  
+```
+
+### 13.1.d Asynchronous Programming
+- Callback function is wisely used in `asynchronous programming`
+- 
+
+
+
+### ⛔ **Callback hell**: 
+> When we need to wait for something with delay, it would get messy quickly if we have multiple steps that depend on each other (Callback Hell)
+```ts
+  doStep1((result1) => {
+    doStep2(result1, (result2) => {
+      doStep3(result2, (result3) => {
+        console.log("All done:", result3);
+      });
+    });
+  });
+```
+### 13.2 `Promises`
+- A solution to callback hell is to use `Promises`.
+- `Promise` represents a value that may be available now, later, or never.
+
+
