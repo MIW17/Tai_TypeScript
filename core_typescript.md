@@ -12,6 +12,8 @@
   - [2.1 TypeScript compiler (tsc)](#21-typescript-compiler-tsc)
   - [2.2 TypeScript editor: VS Code](#22-typescript-editor-vs-code)
   - [2.3 Types can be Explicit](#23-types-can-be-explicit)
+  - [2.4 How to init a project using TypeScript?](#24-how-to-init-a-project-using-typescript)
+  - [2.5 How to run a TypeScript file?](#25-how-to-run-a-typescript-file)
 - [3. Basic Types & Data Types](#-3-basic-types--data-types)
   - [3.1 Hoisting](#31-hoisting)
   - [3.2 Three ways of Declaring Variables](#32-three-ways-of-declaring-variables)
@@ -33,7 +35,7 @@
 - [6. Equality operator (`==` vs `===`)](#-6-equality-operator--vs-)
   - [6.1 Loose Equality vs Strict Equality](#61-loose-equality-vs-strict-equality)
   - [6.2 Examples](#62-examples)
-- [7. Reference types](#-7-reference-types)
+- [7. Reference types](#-7-reference-data-types)
   - [7.1 Object](#71-object)
   - [7.2 Equality is for references](#72-equality-is-for-references)
 - [8. Null & Undefined](#-8-null--undefined)
@@ -61,7 +63,7 @@
 ## 📘 0. Interesting links
 
 - [React Components For Creative Developers](https://reactbits.dev/)
-- [Github: TypeScript Coding Guideline](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines#null-and-undefined)
+- [TypeScript: Documentation](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [TypeScript practice challenges](https://github.com/type-challenges/type-challenges/tree/main/questions)
 
 ## 📘 1. What is TypeScript?
@@ -80,13 +82,19 @@ npm install ts-node typescript @types/node --save-dev
 ```
 
 ### 2.1 TypeScript compiler (tsc)
-
+- Check if you have installed `nodejs` first
+```bash
+node -v
+```
 - We can install TypeScript Compiler via `npm`
 - Use this code to install TypeScript Compiler (tsc) globally
-- Remember to install `nodejs` first
 
 ```bash
 npm install -g typescript
+```
+- Verify TypeScript compiler installation
+```bash
+tsc -v
 ```
 
 ### 2.2 TypeScript editor: VS Code
@@ -107,7 +115,156 @@ npm install -g typescript
 ```
 ---
 
+### 2.4 How to init a project using TypeScript?
+
+- A TypeScript project usually has 3 main parts:
+  1. `package.json` -> manages dependencies and scripts
+  2. `tsconfig.json` -> tells the TypeScript compiler how to compile your code
+  3. `src/` folder -> contains your `.ts` source files
+
+#### Step 1: Create a new folder
+
+```bash
+mkdir my-typescript-project
+cd my-typescript-project
+```
+
+#### Step 2: Initialize a Node.js project
+
+```bash
+npm init -y
+```
+
+This creates a `package.json` file.
+
+#### Step 3: Install TypeScript and useful tools
+
+```bash
+npm install --save-dev typescript ts-node @types/node
+```
+
+- `typescript`: the TypeScript compiler
+- `ts-node`: runs TypeScript files directly
+- `@types/node`: gives TypeScript type definitions for Node.js
+
+#### Step 4: Create a TypeScript config file
+
+```bash
+npx tsc --init
+```
+
+This creates a `tsconfig.json` file. You can adjust it later based on your needs.
+
+#### Step 5: Create your first TypeScript file
+
+Create a folder named `src` and a file inside it:
+
+```bash
+mkdir src
+```
+
+```ts
+// src/index.ts
+console.log("Hello TypeScript!");
+```
+
+#### Step 6: Add scripts to package.json
+
+Open `package.json` and add scripts like this:
+
+```json
+"scripts": {
+  "start": "ts-node src/index.ts",
+  "build": "tsc"
+}
+```
+
+#### Step 7: Run the project
+
+```bash
+npm start
+```
+
+This runs your TypeScript file directly.
+
+To compile it into JavaScript:
+
+```bash
+npm run build
+```
+
+#### Example project structure
+
+```text
+my-typescript-project/
+├── package.json
+├── tsconfig.json
+└── src/
+    └── index.ts
+```
+
+### 2.5. How to run a TypeScript file?
+
+- There are two common ways to run TypeScript code:
+  1. Run it directly with `ts-node` for quick testing
+  2. Compile it to JavaScript with `tsc` for a more production-like workflow
+
+#### Option 1: Run directly with ts-node
+
+But make sure the terminal path is correct
+Use this for learning / debugging / or fast prototyping:
+
+```bash
+npx ts-node src/index.ts
+```
+#### Option 2: Compile to JavaScript first
+
+If you want to build your project properly, first compile it:
+
+```bash
+npx tsc
+```
+
+Then run the generated JavaScript file:
+
+```bash
+node dist/index.js
+```
+
+> In this project, the scripts are already set up in `package.json` to help with this workflow:
+
+```json
+"scripts": {
+  "start": "ts-node src/index.ts",
+  "build": "tsc"
+}
+```
+
+#### Best practice
+
+- Use `ts-node` for quick development and testing.
+- Use `tsc` when you want to build and run the final version of your project.
+- Keep your TypeScript files inside the `src` folder and write clean, typed code.
+
+#### Example
+
+```ts
+// src/index.ts
+const message: string = "Hello from TypeScript!";
+console.log(message);
+```
+
+Run it with:
+
+```bash
+npm start
+```
+
 ## 📘 3. Basic Types & Data Types
+
+TypeScript divides data to 2 types:
+  - Primitives (passed by value): `string`, `number`, `boolean`, `null`, `undefined`, etc
+  - References (passed by refernece): reach out to section [7. Reference types](#-7-reference-data-types)
 
 ### 3.1 <span style="color: green;">Hoisting</span>
 
@@ -200,10 +357,17 @@ In TypeScript, we have some basic data types including:
 
 - `unknown` is safer than `any` because it forces to **narrow the type** before using it.
 - TypeScript won’t let us access properties or call methods on `unknown` without type checks.
+- To perform actions on an unknown variable, we must safely prove its type first using one of these methods:
 
 ```ts
   if (typeof dontKnow === "string") {
-    console.log(dontKnow.toUpperCase()); // Safe
+    console.log(dontKnow.toUpperCase()); // allowed to perform
+  }
+```
+
+```ts
+  if (dontKnow instanceof Date) {
+    console.log(dontKnow.toISOString()); // allowed to perform
   }
 ```
 
@@ -267,7 +431,9 @@ In UI tests (e.g. form <u>validation</u>), inputs can be of mixed types:
 ```
 
 ### 3.6 Tuple Types
-
+- Tuple is a special type of array
+- It's an array with fixed number of elements
+- Each element has a known and specific data type
 ```ts
   let userInfo: [string, number, boolean];
   userInfo = ["Tony", 24, true];
@@ -311,7 +477,7 @@ In UI tests (e.g. form <u>validation</u>), inputs can be of mixed types:
 
 ---
 
-## 4 Date
+## 4. Date
 
 - Reference:
   - [MDN - Date - JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
@@ -457,6 +623,7 @@ Represent overflow / extremely large values.
 
 ### 6.1 Loose Equality vs Strict Equality
 
+- "Type Coercion" --> implicit conversion of a value from this data type to another data type.
 | Operator | Name             | Type Coercion |
 | -------- | ---------------- | ------------- |
 | `==`     | Loose Equality   | ✅ Yes        |
@@ -484,38 +651,43 @@ Best practice:
 
 ---
 
-## 📘 7. Reference types
+## 📘 7. Reference data types
+Examples of Reference Types: `object`, `Array`, `Function` and custom `class` instances
 
 ### 7.1 Object
 
 Object (including array, function, ...) is reference types, not value types.
 
 ```ts
-  var foo = {};
-  var bar = foo; // bar trỏ cùng object với foo
+// Changing user2 will modify user1 because they reference the same object
+let user1 = { name: "Alice" };
+let user2 = user1; 
+
+user2.name = "Bob";
+console.log(user1.name); // Output: "Bob"
 ```
 
-- When we set `bar = foo`, we do not copy the object, but we copy the address to it --> bar is a reference to the same object.
-- Therefore, `foo` and `bar` points to the same object in memory space
-
-```ts
-  foo.baz = 123;
-  console.log(bar.baz); // Output: 123
-```
-
-- If we change that object through `foo.baz = 123` then `bar` would change too.
+- When we set `user2.name = "Bob"`, we do not copy the object, but we copy the address to it 
+- Therefore, `user1` and `user2` points to the same object in memory space
 
 > ==NOTE==: we do not have 2 objects, we just have two variables that points to the same object.
 
 ### 7.2 Equality is for references
+- Trong JS/TS, so sánh object bản chất là so sánh địa chỉ ô nhớ (references), chứ không so sánh giá trị bên trong.
+```ts
+// Analogy: xem object là một căn nhà. Khi so sánh:
+const nha_A = { so_phong: 3 };
+const nha_B = { so_phong: 3 };
+// Value: cả hai nhà đều giống nhau (có 3 phòng) nhưng về reference thì hai ngôi nhà có địa chỉ khác nhau
+```
 
 ```ts
   var foo = {};
   var bar = foo; // bar = cùng object với foo
   var baz = {}; // baz = object MỚI, khác với foo
 
-  console.log(foo === bar); // true (cùng tham chiếu)
-  console.log(foo === baz); // false (2 object khác nhau)
+  console.log(foo === bar); // true (cùng tham chiếu): Hai biến trỏ chung một vùng nhớ
+  console.log(foo === baz); // false (2 object khác nhau):  Hai object nội dung giống nhau nhưng khác vùng nhớ
 ```
 
 > ==REMEMBER==: Comparing object in JS is comparing references, not values !
