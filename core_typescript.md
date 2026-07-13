@@ -40,8 +40,8 @@
   - [7.2 Equality is for references](#72-equality-is-for-references)
 - [8. Null & Undefined](#-8-null--undefined)
   - [8.1 Definition](#81-definition)
-  - [8.2 How TypeScript / JavaScript treat them in comparison](#82-how-typescript--javascript-treat-them-in-comparison)
-  - [8.3 Checking for root-level undefined & referencing undeclared variables](#83-checking-for-root-level-undefined--referencing-undeclared-variables)
+  - [8.2 How to check null | undefined](#82-how-to-check-null-or-undefined)
+  - [8.3 Usage of `typeof`](#83-usage-of-typeof)
   - [8.4 Best practice: Avoid explicit use of undefined in Return Values](#84-best-practice-avoid-explicit-use-of-undefined-in-return-values)
   - [8.5 Callback & Validation function](#85-callback--validation-function)
 - [9. Truthy](#-9-truthy)
@@ -708,7 +708,7 @@ JavaScript (and by extension TypeScript) has two bottom types : `null` and `unde
 - Something is currently unavailable: `null`
   - we use `null` when we want to declare a variable may have value, but not at the moment
 
-### 8.2 How TypeScript / JavaScript treat them in comparison
+### 8.2 How to check `null` or `undefined`
 
 ```ts
 // Both null and undefined are only `==` to themselves and each other:
@@ -722,7 +722,7 @@ console.log("" == undefined); // false
 console.log(false == undefined); // false
 ```
 
-- Therefore, using `==` is recommended because it checks for both `null` or `undefined`
+> Hence, using `== null` (loose equality) is recommended because it checks for both `null`and `undefined` at the same time (because `null == undefined`)
 - For example,
 
 ```ts
@@ -733,32 +733,46 @@ console.log(false == undefined); // false
   }
 ```
 
-### 8.3 Checking for “root-level undefined” & referencing undeclared variables
+### 8.3 Usage of `typeof` 
 
-- If we use variables that are not yet declaired (global-scoped) --> `ReferenceError`
-  - E.x: `console.log(someGlobal)` while `someGlobal` is not yet imported or `var/let/const`
-- So to check if a variable is defined or not at a global level you normally use `typeof`:
-  ```ts
-    if (typeof someGlobal !== "undefined") {
-      // someGlobal is now safe to use
-      console.log(someglobal);
-    }
-  ```
+- We use `typeof` to check for “root-level undefined” & referencing undeclared variables, meaning that:
+  - If we use variables that are not yet declaired (global-scoped) --> `ReferenceError`
+    - E.x: `console.log(someGlobal)` while `someGlobal` is not yet imported or `var/let/const`
+  - So to check if a variable is defined or not at a global level we normally use `typeof`:
+    ```ts
+      if (typeof someGlobal !== "undefined") {
+        // someGlobal is now safe to use
+        console.log(someglobal);
+      }
+    ```
+-  ⚠️❗ `typeof` is only used for checking undefined, not suitable to check null because `typeof null` will return `object`
+
+    | Variable to check   | Code               | Output      |
+    |---------------------|--------------------|-------------|
+    | `undefined`         | `typeof undefined` | `undefined` |
+    | Undeclared variable | `typeof something` | `undefined` |
+    | `null`              | `typeof null`      | `object`    |
 
 ### 8.4 Best practice: Avoid explicit use of `undefined` in Return Values
 
+- JavaScript/TypeScript in general, every `function` always return something, either it is returned implicitly or explicitly
+
 #### a. Functions that return `undefined` implicitly
 
-In JavaScript/TypeScript, if a function has no `return` statement, it implicitly returns `undefined`.
+- If a function has no `return` statement, it implicitly returns `undefined`. 
+- This kind of function is for execution purpose
 
 ```ts
   function sayHello() {
     console.log("Hello");
+    // then JS/TS automatically add this code of line: 
+    // return undefined;
   }
-
   const result = sayHello(); // prints "Hello"
   console.log(result); // 👉 undefined
 ```
+
+> Explanation: `sayHello()` is called and executed --> "Hello" is printed out. Then function returns `undefined` implicitly --> `undefined` get stored into `result` variable.
 
 #### b. Explicitly returning `undefined` in an object
 
@@ -773,10 +787,17 @@ In JavaScript/TypeScript, if a function has no `return` statement, it implicitly
 
 This adds a property `age` with a value of `undefined`. But here's the problem:
 
-- When <span style="color: red;">SERIALIZING</span> to JSON, the `undefined` property will be removed
+- When <span style="color: red;">SERIALIZING</span> to JSON, the `undefined` property will be removed <--- Because `undefined` type does not exist in `JSON`
+
+```ts
+const user = getUser();
+const jsonString = JSON.stringify(user);
+console.log(jsonString); // 👉 {"name":"Alice"}
+```
+
 - It can lead to inconsistent or confusing behavior in APIs
 
-#### c. Better strategy: use Optional Properties `?`
+#### c. A better strategy: using Optional Properties `?`
 
 We can simply **ignore** the property and use `?` (optional) in the return type like this:
 
@@ -784,10 +805,12 @@ We can simply **ignore** the property and use `?` (optional) in the return type 
   function getUser(): { name: string; age?: number } {
     return {
       name: "Alice",
-      // no age field at all
+      // no need to use `age` field at all
     };
   }
 ```
+
+- Writing `age?: number` is the same as writing `age: number | undefined`
 
 ### 8.5 Callback & Validation function
 
@@ -844,11 +867,13 @@ For example:
 | **Arrow Function**       | `const add = (a: number, b: number): number => a + b;`                  | Short syntax, great for callbacks, `this`-safe (lexical `this`) | ❌ Not hoisted; no own `this`, `arguments`, or `super`  |
 
 > 💡💡💡
+
 > Use **arrow functions** when working with UI event handlers, promises, or concise operations.  
 > Use **declarations** when writing reusable named logic.  
 > Use **expressions** for inline logic or when we want to assign a function to a variable.
 
 ### 10.1 Function concepts & Type Annotations
+- How to write `function`? --> two parts: parameters + return type (return type can be omitted) due to the ability of inference in TypeScript. 
 
 - Parameters / Arguments: We can declare
 
@@ -928,21 +953,34 @@ For example:
 
 Explanation:
 
-- `name: string`: parameter `name` must be a string.
-- `: string`: return type of the function.
+- `function sayHi(name: string): string` declares a named function.
+- `name: string` means the parameter must be a string.
+- `: string` after the parameter list specifies the return type.
+- The function body returns a string instead of directly logging it, which makes it more reusable.
 
 ### 10.3 Function Expression
 
-- A function created within another syntax
-- It won't work if we put it like this
+- function expression --> creates a function --> assigns function to a variable
+- Function expressions are not hoisted in the same way. The variable is hoisted, but its value is not.
+- Meaning that we cannot call the function before the assignment.
+
+> Function expressions are useful when we need to pass functions as values or assign them conditionally.
 
 ```ts
-// Function Expression
-  sum(1, 2); // error!
-  let sum = function (a, b) {
-    return a + b;
-  };
+let sum = function (a: number, b: number): number {
+  return a + b;
+};
+
+console.log(sum(1, 2)); // 3
+
+// The following would throw an error if placed before the definition above:
+// console.log(sum(1, 2));
 ```
+
+Explanation:
+- `let sum = function (a: number, b: number): number` creates an anonymous function and stores it in `sum`.
+- The function is only available after the assignment line runs.
+- This makes function expressions suitable for callbacks, event handlers, and passing functions around.
 
 ### 10.4 Arrow Function
 
