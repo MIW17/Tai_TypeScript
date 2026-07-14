@@ -937,10 +937,19 @@ For example:
   logInfo("Linh", 22, "student", "intern"); // "Linh, Age: 22, Tags: student, intern"
 ```
 
-### 10.2 Function Declaration
+> ⚠️⚠️⚠️ WE HAVE TWO WAYS OF CREATING `function`: ⚠️⚠️⚠️
+>   * function declaration
+>   * function expression
+> The differences are: 
+>     + hoisting
+>     + defining data type
 
+### 10.2 Function Declaration
+ 
 - By doing this, the function will be declared before executed
-- We should use this method
+
+> We usually use it for global function such as: Helper / Utility functions.
+
 
 ```ts
 // Function Declaration
@@ -960,58 +969,77 @@ Explanation:
 
 ### 10.3 Function Expression
 
-- function expression --> creates a function --> assigns function to a variable
+- Function expression (CAN NOT HOISTING), because we treat `function` here as a variable
+    + *Step 1: creates a function*
+    + *Step 2: store that function to a variable*
 - Function expressions are not hoisted in the same way. The variable is hoisted, but its value is not.
 - Meaning that we cannot call the function before the assignment.
 
-> Function expressions are useful when we need to pass functions as values or assign them conditionally.
+> We usually use it to callback --> pass functions as values or assign them conditionally.
 
+#### Use case 1: Inline callback (array methods)
 ```ts
-let sum = function (a: number, b: number): number {
-  return a + b;
-};
+const numbers = [1, 2, 3, 4];
 
-console.log(sum(1, 2)); // 3
+// ❌ Dùng Declaration (phải tạo hàm riêng, rườm rà)
+function isEven(n: number): boolean { return n % 2 === 0; }
+const evens1 = numbers.filter(isEven);
 
-// The following would throw an error if placed before the definition above:
-// console.log(sum(1, 2));
+// ✅ Dùng Arrow Function Expression (ngắn gọn)
+const evens2 = numbers.filter((n: number) => n % 2 === 0);
 ```
 
-Explanation:
-- `let sum = function (a: number, b: number): number` creates an anonymous function and stores it in `sum`.
-- The function is only available after the assignment line runs.
-- This makes function expressions suitable for callbacks, event handlers, and passing functions around.
+#### Use case 2: Define common Type for multiple functions
+To understand Type --> reach out to [11. Class vs Interface vs Type Alias](#-11-classclass-vs-interface-vs-type-alias)
+
+```ts
+To be continued
+```
 
 ### 10.4 Arrow Function
-
-- This one usually goes well with Function Expression
+#### a. Overview and syntax
+- Arrow function is a way of creating function by `function expression`
 
 ```ts
 // Instead of coding like this
-  let func = function (arg1, arg2, ...argN) {
-    return expression;
-  };
+  const add = add(a: number, b: number): number {
+    return a + b;
+  }
 // We can do like this, which is much shorter
-  let func = (arg1, arg2, ...argN) => expression;
+  const add = (a: number, b: number): number => {
+    return a + b;
+  }
+```
+
+- USE CASES:
+```ts
+// 1. Cú pháp đầy đủ
+const add = (a: number, b: number): number => {
+  return a + b;
+};
+
+// 2. Rút gọn: Nếu thân hàm chỉ có 1 dòng return, bỏ luôn `{}` và từ khóa `return` (Implicit Return)
+const multiply = (a: number, b: number): number => a * b;
+
+// 3. Trả về một Object ngắn gọn (bọc Object trong cặp ngoặc đơn `()`)
+const makeUser = (name: string, age: number) => ({ name: name, age: age });
 ```
 
 - In JAVASCRIPT (not TYPESCRIPT) where there is only one parameter, we can ommit the `()`, which is conveniently short:
 
-```ts
+```js
 // let double = function(n) { return n * 2 }
 let double = (n) => n * 2;
 alert(double(3)); // 6
 ```
 
+#### b. What problems do Arrow Functions solve?
+- To be updated
+
 - Reference:
   - [Arrow Function](https://basarat.gitbook.io/typescript/future-javascript/arrow-functions)
   - [Arrow Function - Vietnamese](https://techmaster.vn/posts/35067/javascript-can-ban-function-va-arrow-function)
 
-```ts
-  const add = (a: number, b: number): number => {
-    return a + b;
-  };
-```
 ### 10.5 Anonymous Function
 - The Anonymous Function is the classical way to define a function without a name. 
 - It is typically used for callbacks and event handlers where the function's logic is only needed at that specific point in the code.
