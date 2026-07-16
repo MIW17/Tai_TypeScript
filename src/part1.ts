@@ -1,9 +1,9 @@
-﻿// ------------------------------
+﻿// ------------------------------------------------------------
 // part1.ts - TypeScript learning trace
-// ------------------------------
+// ------------------------------------------------------------
 
 // 1. Function declaration / expression / arrow function
-
+// ------------------------------------------------------------
 enum direction {
   up,
   down,
@@ -13,30 +13,35 @@ console.log("direction.up", direction.up); // 0
 console.log("direction.down", direction.down); // 1
 console.log("direction[0]", direction[0]); // "up"
 console.log("direction[1]", direction[1]); // "down"
-
+// ------------------------------------------------------------
 function log(): void {
   console.log("hi");
 }
-
 log(); // "hi"
 
 function sayHello(): void {
   console.log("Hello, world!");
 }
 
-const sayHelloResult = sayHello(); // undefined
-console.log("sayHelloResult", sayHelloResult); // undefined
+const sayHelloResult = sayHello(); // Hello, world 
+// --> because the function execute the console.log inside it
+console.log("sayHelloResult will return undefined", sayHelloResult); 
+// because the function does not return anything, so it returns undefined
+// ------------------------------------------------------------
 
 function test(arg: string | null | undefined): void {
-  if (arg != null) {
+  if (arg != null) { // because null is loosely equal to undefined
+    // we can use !=null to check if a variable is not null or undefined
     // here, arg is NOT null or undefined
     console.log("test length", arg.length);
   } else {
     console.log("arg is null or undefined");
   }
 }
-
 test("hello");
+test(null);
+test(undefined);
+// ------------------------------------------------------------
 
 type MathOp = (a: number, b: number) => number;
 const multiply: MathOp = (x, y) => x * y;

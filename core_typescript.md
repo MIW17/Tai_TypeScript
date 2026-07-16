@@ -56,7 +56,8 @@
 - [11. Class vs Interface vs Type Alias](#-11-classclass-vs-interface-vs-type-alias)
   - [11.1 type Alias](#111-type-alias)
   - [11.2 interface](#112-interface)
-  - [11.3 class](#113-class)
+  - [11.3 type vs interface differences](#113-type-vs-interface-differences)
+  - [11.4 class](#114-class)
 = [12. ]()
 ---
 
@@ -1054,12 +1055,17 @@ function(param1, param2) {
 ---
 
 ## 11. `Class` vs `Interface` vs `Type Alias`
+- TypeScript gives us different ways to define the **shape of data:**
+    ✅ `type` alias
+    ✅ `interface`
+    ✅ `class`
 
-TypeScript gives us different ways to define the **shape of data:**
-✅ `type` alias
-✅ `interface`
-✅ `class`
+- These three concepts provide us ways to define a Data contract --> code is more reusable
+- They are important concepts in OOP
 
+| `type` & `interface`                                                         | `class`                                                                                              |
+|------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| - a contract describing the shape of an object - does not contain logic code | - a blueprint creating objects with actual data and behavior - contain logic code and data structure |
 
 > Each serves a different purpose.
 ### 11.1 `type` Alias
@@ -1092,12 +1098,25 @@ We can also define `union` and `intersection` types with `|` and `&`
   type orType = Car | Addidas;                            // Union
   type ResponseStatus = "success" | "error" | "loading"; // Type Literal
 ```
-#### 🧩 Note:
-- Can define **primitive types**, unions, tuples, etc.
-- Cannot implement or extend like a `class` or `interface`.
+#### 🧩 Note about usage:
+- Defining complex data structure with **primitive types**, unions, tuples, etc.
+- Cannot implement behavior/logic of an object or extend like a `class` or `interface`.
+- Can use a `type` alias across multiple files by exporting it:
+    ```ts
+    export type User = {
+      id: number;
+      name: string;
+      email: ?string;
+    };
+    ```
+- A `type` alias cannot be changed or redeclared once created:
+    ```ts
+    type User = { name: string; };
+    type User = { age: number; }; // Error: Duplicate identifier
+    ```
 
 ### 11.2 `interface`
-> - Similar to `type`, but ***extendable***.
+> - Very similar to `type`, but ***extendable*** with new fields (declaration merging).
 > - Preferable when working with class-based OOP.
 #### 🔹 `interface` Syntax
 ```ts
@@ -1107,7 +1126,7 @@ We can also define `union` and `intersection` types with `|` and `&`
   }
 ```
 #### 🧩 Note:
-- Can use `extends` for inheritance.
+- Can use `extends` for **inheritance** (OOP-based).
 - Can be merged (declaration merging).
 - ❌ Interfaces CANNOT DEFINE UNION TYPES.
 
@@ -1147,7 +1166,16 @@ We can also define `union` and `intersection` types with `|` and `&`
 
   const a: Animal = { name: "Dog", age: 3 }; // valid!
 ```
- ### 11.3 `class`
+## 11.3 `type` vs `interface` differences
+
+- `interface`: Can only describe object shapes and class structures.
+- `type`: Can describe objects, but also primitives, unions, and tuples.
+```ts
+type ID = string | number; // Interface cannot do this
+type Point = [number, number]; // Interface cannot do this
+```
+
+ ### 11.4 `class`
 > - A `class` is a blueprint for creating ***objects*** with specific structure and behavior. 
 > - Unlike others, a `class` can contain both:
     - data: *properties*
