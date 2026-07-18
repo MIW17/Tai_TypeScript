@@ -1176,6 +1176,8 @@ type Point = [number, number]; // Interface cannot do this
 ```
 
  ### 11.4 `class`
+--> For a full understanding about `class` and OOP Concept: [OOP with TypeScript](https://docs.google.com/document/d/12BEdRNHD4iTTnwp0sO47MqrG1EGOZEPTbYOD86fDycM/edit?tab=t.d9rval3pgeu)
+
 > - A `class` is a blueprint for creating ***objects*** with specific structure and behavior. 
 > - Unlike others, a `class` can contain both:
     - data: *properties*
