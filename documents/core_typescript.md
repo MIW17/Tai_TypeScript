@@ -1267,6 +1267,8 @@ We can create a subclass that **inherits** from a base class using `extends`:
 ## 13. Callback -> Promise -> Async/Await
 ### Asynchronous Vs Synchronous Programming
 
+> Reach out to this note on Google Docs: [Asynchronous in TypeScript](https://docs.google.com/document/d/12BEdRNHD4iTTnwp0sO47MqrG1EGOZEPTbYOD86fDycM/edit?tab=t.jrsgjrlvwxpe)
+
 | Programming type | Description | Example |
 | ---------------- |------------ | ------- |
 | **Synchronous**  | Code runs **in order**, line by line      | Using `console.log` 10 times, each line will be executed line by line |
